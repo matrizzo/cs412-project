@@ -96,12 +96,7 @@ bool Session::onNewData() {
                 log(err_cmd + "\n");
 
                 // Build error message
-                char err_message[ERROR_LENGTH];
-                snprintf(err_message,
-                    ERROR_LENGTH,
-                    ("Error: " + err_cmd + ": " + e.what() + "%c").c_str(),
-                    '\n');
-                response = err_message;
+                response = "Error: " + err_cmd + ": " + e.what() + "\n";
             }
 
             // Print response if not empty
