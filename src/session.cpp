@@ -277,7 +277,7 @@ std::string Session::executePing(const std::string &host) const {
     // A valid hostname contains only letters (a-z), digits (0-9), dots (.)
     // and dashes (-). Source: https://en.wikipedia.org/wiki/Hostname
     // In order to support IPv6 addresses we also allow colons (:).
-    if (host.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789.-;") !=
+    if (host.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789.-:") !=
         std::string::npos) {
 
         throw GrassException("Invalid hostname");
