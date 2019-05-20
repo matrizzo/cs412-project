@@ -78,7 +78,7 @@ void FileTransfer::transferWorker(int socket,
         } else {
             // put
             char buf[BUFFER_SIZE];
-            ssize_t received_bytes = read(data_socket, buf, 4200);
+            ssize_t received_bytes = read(data_socket, buf, BUFFER_SIZE);
             printf("Size is %d", strlen(buf));
             size_t total_bytes = 0;
 
