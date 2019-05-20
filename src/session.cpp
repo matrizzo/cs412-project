@@ -64,7 +64,7 @@ std::string Session::username() const {
 }
 
 void log(std::string err_message) {
-    char log_message[256];
+    char log_message[ERROR_LENGTH];
     strcpy(log_message, err_message.c_str());
     fprintf(stderr, "%s\n", log_message);
 }
