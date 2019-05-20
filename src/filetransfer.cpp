@@ -30,7 +30,7 @@ FileTransfer::FileTransfer(const std::string &path) : _is_get(true) {
 
     _file_fd = file_fd;
     _file_size = static_cast<size_t>(stat.st_size);
-    _filename = path.c_str();
+    _filename = path;
 }
 
 FileTransfer::FileTransfer(const std::string &path, size_t size)
@@ -44,7 +44,7 @@ FileTransfer::FileTransfer(const std::string &path, size_t size)
     }
 
     _file_fd = file_fd;
-    _filename = path.c_str();
+    _filename = path;
 }
 
 uint16_t FileTransfer::run(size_t &file_size) const {
@@ -70,8 +70,8 @@ uint16_t FileTransfer::run(size_t &file_size) const {
 void FileTransfer::transferWorker(int socket,
     int file_fd,
     size_t file_size,
-    bool is_get, const char* filename) {
-    //try {
+    bool is_get, std::string filename) {
+    try {
         int data_socket = AcceptFromSocket(socket);
 
         if (is_get) {
@@ -90,8 +90,7 @@ void FileTransfer::transferWorker(int socket,
                 total_bytes += static_cast<size_t>(received_bytes);
                 if (total_bytes > file_size) {
                     printf("Size of file received is bigger then advertised !");
-                    close(file_fd);
-                    remove(filename);
+                    throw GrassException("Incorrect size for file transfer");
                     break;
                 }
 
@@ -99,20 +98,18 @@ void FileTransfer::transferWorker(int socket,
             }
             if(total_bytes < file_size){
                 printf("Size of file was smaller then advertised !");
-                close(file_fd);
-                remove(filename);
+                throw GrassException("Incorrect size for file transfer");
             }
         }
+        close(file_fd);
 
-        ShutdownSocket(data_socket);
-        CloseSocket(data_socket);
-
-    //} catch (...) {
-    //}
+    } catch (...) {
+        close(file_fd);
+        remove(filename.c_str());
+    }
 
     ShutdownSocket(socket);
     CloseSocket(socket);
-    close(file_fd);
 }
 
 } // namespace grass
