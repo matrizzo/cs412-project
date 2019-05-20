@@ -30,6 +30,7 @@ FileTransfer::FileTransfer(const std::string &path) : _is_get(true) {
 
     _file_fd = file_fd;
     _file_size = static_cast<size_t>(stat.st_size);
+    _filename = path.c_str();
 }
 
 FileTransfer::FileTransfer(const std::string &path, size_t size)
@@ -43,6 +44,7 @@ FileTransfer::FileTransfer(const std::string &path, size_t size)
     }
 
     _file_fd = file_fd;
+    _filename = path.c_str();
 }
 
 uint16_t FileTransfer::run(size_t &file_size) const {
@@ -54,7 +56,7 @@ uint16_t FileTransfer::run(size_t &file_size) const {
         StartListeningOnSocket(socket);
 
         std::thread worker(
-            transferWorker, socket, _file_fd, _file_size, _is_get);
+            transferWorker, socket, _file_fd, _file_size, _is_get, _filename);
         worker.detach();
 
         file_size = _file_size;
@@ -68,8 +70,8 @@ uint16_t FileTransfer::run(size_t &file_size) const {
 void FileTransfer::transferWorker(int socket,
     int file_fd,
     size_t file_size,
-    bool is_get) {
-    try {
+    bool is_get, const char* filename) {
+    //try {
         int data_socket = AcceptFromSocket(socket);
 
         if (is_get) {
@@ -86,19 +88,27 @@ void FileTransfer::transferWorker(int socket,
                 write(file_fd, buf, static_cast<size_t>(received_bytes));
 
                 total_bytes += static_cast<size_t>(received_bytes);
-                if (total_bytes >= file_size) {
+                if (total_bytes > file_size) {
+                    printf("Size of file received is bigger then advertised !");
+                    close(file_fd);
+                    remove(filename);
                     break;
                 }
 
                 received_bytes = read(data_socket, buf, sizeof(buf));
+            }
+            if(total_bytes < file_size){
+                printf("Size of file was smaller then advertised !");
+                close(file_fd);
+                remove(filename);
             }
         }
 
         ShutdownSocket(data_socket);
         CloseSocket(data_socket);
 
-    } catch (...) {
-    }
+    //} catch (...) {
+    //}
 
     ShutdownSocket(socket);
     CloseSocket(socket);

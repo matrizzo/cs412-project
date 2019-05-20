@@ -25,11 +25,12 @@ private:
      * This thread is responsible for closing the file descriptors.
      */
     static void
-    transferWorker(int socket, int file_fd, size_t file_size, bool is_get);
+    transferWorker(int socket, int file_fd, size_t file_size, bool is_get, const char* filename);
 
     int _file_fd;
     size_t _file_size;
     bool _is_get;
+    const char* _filename;
 };
 
 } // namespace grass
