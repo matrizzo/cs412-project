@@ -6,6 +6,8 @@ Project for CS412 - Software Security
 
 [Exploits](https://github.com/matrizzo/cs412-project/blob/master/exploits.zip)
 
+Password for the exploits archive: `kcfYBN00ZN7_0PgnyrmY0U9qxrL_IwVU1dxiw86yKnw`
+
 ## Team members
 
 | Full name | SCIPER | GitHub account |
