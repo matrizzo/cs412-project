@@ -299,7 +299,7 @@ std::string Session::executeLs() const {
     std::string path = _directory.PathFromRoot();
     std::array<char, 128> buffer;
     std::unique_ptr<FILE, decltype(&pclose)> pipe(
-        popen(("ls -l " + path).c_str(), "r"), pclose);
+        popen(("ls -l '" + path + "'").c_str(), "r"), pclose);
     if (!pipe) {
         throw GrassException("ls() failed");
     }
@@ -329,6 +329,13 @@ std::string Session::executeCd(const std::string &relative_path) {
 }
 
 std::string Session::executeMkdir(const std::string &relative_path) const {
+
+    std::string valid_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
+    if (relative_path.find_first_not_of(valid_characters) != std::string::npos) {
+
+        throw GrassException("Invalid directory name");
+    }
+
     // Build absolute path and permissions mask
     std::string path = _directory.PathFromRoot(relative_path);
     mode_t mask = S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
